@@ -1,0 +1,47 @@
+networks:
+    task-mysql-network:
+        driver: bridge
+
+services:
+    task-mysql-web:
+        container_name: task-mysql-web
+        image: nginx:stable-alpine
+        ports:
+            - "9800:80"
+        volumes:
+            - ./../:/var/www/html/
+            - ./services/nginx/log:/var/log/nginx
+            - ./services/nginx/conf.d:/etc/nginx/conf.d
+        depends_on:
+            - task-mysql-app
+        networks:
+            - task-mysql-network
+        hostname: task-mysql-web
+
+    task-mysql-app:
+        container_name: task-mysql-app
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ./../:/var/www/html/
+        ports:
+            - "9890:9000"
+        depends_on:
+            - task-mysql-db
+        networks:
+            - task-mysql-network
+
+    task-mysql-db:
+        container_name: task-mysql-db
+        image: mysql:8.0
+        environment:
+            MYSQL_DATABASE: "task-mysql_db"
+            MYSQL_ROOT_PASSWORD: 1
+        volumes:
+            - ./data/mysql8:/var/lib/mysql
+        hostname: task-mysql-db
+        networks:
+            - task-mysql-network
+        ports:
+            - "3390:3306"
