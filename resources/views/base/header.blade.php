@@ -26,7 +26,9 @@
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
 </head>
 <body>
-
+<a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm mb-3">
+    <i class="bx bx-home"></i> Dashboard
+</a>
 <main>
     @yield('content')
 </main>

@@ -26,6 +26,7 @@
                     </thead>
                     <tbody>
                     @foreach($files as $file)
+                        @if($file->user_id == auth()->id())
                         <tr>
                             <td>{{ $file->id }}</td>
                             <td>{{ $file->name }}</td>
@@ -47,6 +48,7 @@
                                 </form>
                             </td>
                         </tr>
+                        @endif
                     @endforeach
                     </tbody>
                 </table>
