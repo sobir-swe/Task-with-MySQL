@@ -1232,27 +1232,14 @@ h6 {
   color: #012970;
 }
 
-/*--------------------------------------------------------------
-# Image for Docco
---------------------------------------------------------------*/
-
-.img-container {
-    text-align: left;
-    max-width: 100%;
-    margin: 0;
+.custom-btn {
+    background-color: #007bff;
+    border-color: #007bff;
 }
 
-.img-large {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    width: auto;
-    max-height: none;
-    border-radius: 8px;
+.custom-btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
 }
 
-.img-wrapper {
-    width: 100%;
-    padding: 10px;
-}
 
