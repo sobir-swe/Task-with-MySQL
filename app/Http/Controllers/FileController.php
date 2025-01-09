@@ -10,7 +10,7 @@ class FileController extends Controller
 {
     public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $files = File::all();
+        $files = File::query()->where('user_id', auth()->id())->paginate(10);
         return view('forms.show', ['files' => $files]);
     }
 
