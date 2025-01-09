@@ -1,4 +1,4 @@
-@extends('base.header')
+@extends('layouts.master')
 
 @section('title', 'Show Page')
 
@@ -8,50 +8,52 @@
             <div class="card-body">
                 <h5 class="card-title">List of all files</h5>
                 <p>List of all downloaded files</p>
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm mb-3">
-                    <i class="bx bx-home"></i> Dashboard
-                </a>
 
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>File Name</th>
-                        <th>Description</th>
-                        <th>Path</th>
-                        <th>Extension</th>
-                        <th>Size</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($files as $file)
-                        @if($file->user_id == auth()->id())
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
                         <tr>
-                            <td>{{ $file->id }}</td>
-                            <td>{{ $file->name }}</td>
-                            <td>{{ $file->description }}</td>
-                            <td>{{ $file->path }}</td>
-                            <td>{{ $file->extension }}</td>
-                            <td>{{ $file->size }}</td>
-                            <td class="actions">
-                                <a href="{{ route('files.edit', $file->id) }}" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-
-                                <form action="{{ route('files.destroy', $file->id) }}" method="POST" style="display: inline-block;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </td>
+                            <th>ID</th>
+                            <th>File Name</th>
+                            <th>Description</th>
+                            <th>Path</th>
+                            <th>Extension</th>
+                            <th>Size</th>
+                            <th>Actions</th>
                         </tr>
-                        @endif
-                    @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        @foreach($files as $file)
+                            <tr>
+                                <td>{{ $file->id }}</td>
+                                <td>{{ $file->name }}</td>
+                                <td>{{ $file->description }}</td>
+                                <td>{{ $file->path }}</td>
+                                <td>{{ $file->extension }}</td>
+                                <td>{{ $file->size }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('files.edit', $file->id) }}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <form action="{{ route('files.destroy', $file->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3 d-flex justify-content-center">
+                    {{ $files->links('pagination::bootstrap-5') }}
+                </div>
             </div>
         </div>
     </div>

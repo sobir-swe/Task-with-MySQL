@@ -1,4 +1,4 @@
-@extends('base.header')
+@extends('layouts.master')
 @section('title', 'Edit File')
 @section('content')
     <div class="container d-flex justify-content-center align-items-center min-vh-100">

@@ -1,5 +1,7 @@
-@extends('base.header')
+@extends('layouts.master')
+
 @section('title', 'Add Page')
+
 @section('content')
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="col-lg-8">
@@ -15,7 +17,7 @@
                 <div class="row mb-3">
                     <label for="description" class="col-sm-3 col-form-label">Description</label>
                     <div class="col-sm-9">
-                        <textarea  type="text" class="form-control" name="description" id="description"></textarea>
+                        <textarea type="text" class="form-control" name="description" id="description"></textarea>
                     </div>
                 </div>
                 <div class="row mb-3">
