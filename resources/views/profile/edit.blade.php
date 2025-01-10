@@ -53,8 +53,9 @@
 
                             <div class="tab-content pt-2">
                                 @include('profile.partials.overview')
-                                @include('profile.partials.edit')
-                                @include('profile.partials.change')
+                                @include('profile.partials.update')
+                                @include('profile.partials.settings')
+                                @include('profile.change-password')
                             </div>
                         </div>
                     </div>
@@ -63,3 +64,12 @@
         </section>
     </main>
 @endsection
+
+@push('scripts')
+    <script>
+        // Add any custom JavaScript here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize any plugins or add custom functionality
+        });
+    </script>
+@endpush

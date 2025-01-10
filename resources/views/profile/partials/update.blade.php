@@ -26,8 +26,6 @@
             </div>
         </div>
 
-        <!-- Add more form fields -->
-
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
