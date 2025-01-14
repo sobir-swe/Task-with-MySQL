@@ -10,15 +10,21 @@ class File extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'path',
-        'extension',
-        'size',
+        'UserId',
+        'Name',
+        'Description',
+        'Path',
+        'Extension',
+        'Size',
     ];
 
     public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 }

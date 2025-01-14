@@ -19,7 +19,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'FirstName',
+        'LastName',
         'email',
         'password',
     ];
@@ -47,8 +48,19 @@ class User extends Authenticatable
         ];
     }
 
+    public function companies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'accounts');
+    }
+
     public function files(): HasMany
     {
         return $this->hasMany(File::class);
     }
+
+    public function account(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Account::class, 'UserId');
+    }
+
 }

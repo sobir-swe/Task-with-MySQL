@@ -18,12 +18,12 @@ class FileFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => 1,
-            'name' => $this->faker->word(),
-            'description' => $this->faker->sentence(),
-            'path' => $this->faker->imageUrl(),
-            'extension' => $this->faker->randomElement(['png', 'jpg', 'jpeg', 'doc', 'docx', 'pdf', 'xls', 'xlsx']),
-            'size' => $this->faker->randomNumber(),
+            'UserId' => User::all()->random()->id,
+            'Name' => $this->faker->word(),
+            'Description' => $this->faker->sentence(),
+            'Path' => $this->faker->imageUrl(),
+            'Extension' => $this->faker->randomElement(['png', 'jpg', 'jpeg', 'doc', 'docx', 'pdf', 'xls', 'xlsx']),
+            'Size' => $this->faker->randomNumber(),
         ];
     }
 }

@@ -1,37 +1,43 @@
-@extends('layouts.master')
+@extends('layouts.main')
 
-@section('title', 'Add Page')
+@section('title', isset($file) ? 'Edit File' : 'Add Page')
 
 @section('content')
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="col-lg-8">
-            <h1 class="text-center mb-4">Show Form</h1>
-            <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="row mb-3">
-                    <label for="name" class="col-sm-3 col-form-label">Name</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}">
+        <div class="card col-lg-8">
+            <div class="card-body">
+                <h5 class="card-title text-center mb-4">{{ isset($file) ? 'Edit this file' : 'Add New File' }}</h5>
+                <form class="row g-3" action="{{ isset($file) ? route('files.update', $file->id) : route('files.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @if(isset($file))
+                        @method('PUT')
+                    @endif
+
+                    <div class="col-md-12">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ old('name', isset($file) ? $file->name : '') }}" placeholder="Name" required>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="description" class="col-sm-3 col-form-label">Description</label>
-                    <div class="col-sm-9">
-                        <textarea type="text" class="form-control" name="description" id="description"></textarea>
+
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="description" name="description" placeholder="Description"
+                                      style="height: 100px;" required>{{ old('description', isset($file) ? $file->description : '') }}</textarea>
+                            <label for="description">Description</label>
+                        </div>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="file" class="col-sm-3 col-form-label">File Upload</label>
-                    <div class="col-sm-9">
+
+                    <div class="col-12">
+                        <label for="file" class="form-label">File Upload</label>
                         <input class="form-control" type="file" name="file" id="file">
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-9 offset-sm-3">
-                        <button type="submit" class="btn btn-primary">Submit Form</button>
+
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-primary me-2">{{ isset($file) ? 'Update' : 'Submit' }}</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 @endsection

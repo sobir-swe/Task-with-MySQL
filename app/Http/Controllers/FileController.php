@@ -8,35 +8,36 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+    public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $files = File::query()->where('user_id', auth()->id())->paginate(10);
-        return view('forms.show', ['files' => $files]);
+        dd(session()->all());
+        $files = File::query()->where('UserId', auth()->id())->paginate(10);
+        return view('files.list', ['files' => $files]);
     }
 
     public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        return view('forms.add');
+        return view('files.add');
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
-            'file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:10240',
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'File' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:10240',
+            'Name' => 'required|string|max:255',
+            'Description' => 'required|string|max:255',
         ]);
 
         $file = $request->file('file');
         $fileData = $this->saveFileStorage($file, $request);
 
         File::query()->create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'path' => $fileData['path'],
-            'extension' => $fileData['extension'],
-            'size' => $fileData['size'],
-            'user_id' => auth()->id(),
+            'Name' => $request->name,
+            'Description' => $request->description,
+            'Path' => $fileData['Path'],
+            'Extension' => $fileData['Extension'],
+            'Size' => $fileData['Size'],
+            'UserId' => auth()->id(),
         ]);
 
         return redirect('dashboard');
@@ -44,8 +45,8 @@ class FileController extends Controller
 
     public function show($id): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        $file = File::query()->findOrFail($id);
-        return response()->file(storage_path("app/public/{$file->path}"));
+        //        $file = File::query()->findOrFail($id);
+        //        return response()->file(storage_path("app/public/{$file->path}"));
     }
 
     public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
@@ -53,16 +54,16 @@ class FileController extends Controller
         $file = File::query()->findOrFail($id);
         $fileNames = File::all();
 
-        return view('forms.edit', compact('file', 'fileNames'));
+        return view('files.edit', compact('file', 'fileNames'));
     }
 
 
     public function update(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'file' => 'nullable|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:2048'
+            'Name' => 'required|string|max:255',
+            'Description' => 'required|string|max:255',
+            'File' => 'nullable|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:2048'
         ]);
 
         $file = File::query()->findOrFail($id);
@@ -90,7 +91,7 @@ class FileController extends Controller
         Storage::delete($file->path);
         $file->delete();
 
-        return redirect()->route('files.index');
+        return redirect()->route('files.list');
     }
 
     public function saveFileStorage($file): array
@@ -98,9 +99,9 @@ class FileController extends Controller
         $path = $file->store('files', 'public');
 
         return [
-            'path' => $path,
-            'extension' => $file->extension(),
-            'size' => $file->getSize(),
+            'Path' => $path,
+            'Extension' => $file->extension(),
+            'Size' => $file->getSize(),
         ];
     }
 }

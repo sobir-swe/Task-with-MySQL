@@ -26,11 +26,11 @@
                         @foreach($files as $file)
                             <tr>
                                 <td>{{ $file->id }}</td>
-                                <td>{{ $file->name }}</td>
-                                <td>{{ $file->description }}</td>
-                                <td>{{ $file->path }}</td>
-                                <td>{{ $file->extension }}</td>
-                                <td>{{ $file->size }}</td>
+                                <td>{{ $file->Name }}</td>
+                                <td>{{ $file->Description }}</td>
+                                <td>{{ $file->Path }}</td>
+                                <td>{{ $file->Extension }}</td>
+                                <td>{{ $file->Size }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('files.edit', $file->id) }}" class="btn btn-primary btn-sm">
@@ -50,7 +50,6 @@
                         </tbody>
                     </table>
                 </div>
-
                 <div class="mt-3 d-flex justify-content-center">
                     {{ $files->links('pagination::bootstrap-5') }}
                 </div>

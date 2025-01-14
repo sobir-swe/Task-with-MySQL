@@ -45,3 +45,4 @@ services:
             - task-mysql-network
         ports:
             - "3390:3306"
+        user: "1000:1000"

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Account;
+use App\Models\Company;
+use App\Service\Sessions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +30,14 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = Auth::user();
+        $account = Account::query()->
+                            where('UserId', $user->id)->first();
+        $company = Company::query()->
+                            where('Id', $account->CompanyId)->first();
+
+        Sessions::SaveToSession($account, $user, $company);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

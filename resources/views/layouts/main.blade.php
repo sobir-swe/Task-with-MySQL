@@ -37,5 +37,7 @@
 
 @include('components.footer')
 
+@include('components.scripts')
+
 </body>
 </html>

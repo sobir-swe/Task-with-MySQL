@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Account;
+use App\Models\Company;
 use App\Models\User;
+use App\Service\Sessions;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,16 +33,33 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'company_name' => ['required', 'string', 'max:255'],
+            'job_title' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
+        $user = User::query()->create([
+            'FirstName' => $request->first_name,
+            'LastName' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        $company = Company::query()->create([
+            'Name' => $request->company_name,
+        ]);
+
+        $account = Account::query()->create([
+            'UserId' => $user->id,
+            'CompanyId' => $company->id,
+            'JobTitle' => $request->job_title,
+
+        ]);
+
+        Sessions::saveToSession($account, $user, $company);
 
         event(new Registered($user));
 

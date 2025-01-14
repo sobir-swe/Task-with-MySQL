@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('path');
-            $table->string('extension');
-            $table->bigInteger('size');
+            $table->foreignId('UserId')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('Name');
+            $table->string('Description')->nullable();
+            $table->string('Path');
+            $table->string('Extension');
+            $table->bigInteger('Size');
             $table->timestamps();
         });
     }
