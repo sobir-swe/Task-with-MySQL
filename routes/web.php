@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\RequestTime;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\TaskController;
 
@@ -12,6 +13,13 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(\App\Http\Middleware\RequestTime::class)->group(function () {
+    Route::get('/times', function () {
+        return response()->json(['message' => 'Times route works!']);
+    });
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
