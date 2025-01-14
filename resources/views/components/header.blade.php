@@ -1,3 +1,7 @@
+@php
+    $account = session('account');
+@endphp
+
 <header id="header" class="header fixed-top d-flex align-items-center">
     <div class="d-flex align-items-center justify-content-between">
         <a href="{{ url('/dashboard') }}" class="logo d-flex align-items-center">
@@ -25,18 +29,18 @@
             <li class="nav-item dropdown pe-3">
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                     <img src="{{ asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{ session('account')['FirstName'] }}</span>
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{ $account['FirstName'] }}</span>
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        <h6>{{ session('account')['FirstName'] }} {{ session('account')['LastName'] }}</h6>
-                        @if (session('account')['JobTitle'] ?? false)
-                            <h6>({{ session('account')['JobTitle'] }})</h6>
+                        <h6>{{ $account['FirstName'] }} {{ $account['LastName'] }}</h6>
+                        @if ($account['JobTitle'] ?? false)
+                            <h6>({{ $account['JobTitle'] }})</h6>
                         @else
                             <h6>({{ 'No Job Title' }})</h6>
                         @endif
-                        <span>{{ session('account')['title'] ?? 'No Title' }}</span>
+                        <span>{{ $account['title'] ?? 'No Title' }}</span>
                     </li>
 
                     <li>
