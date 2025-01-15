@@ -2,7 +2,7 @@
 
 namespace App\Trait;
 
-trait Account
+trait AccountTrait
 {
     public function getAccount()
     {
