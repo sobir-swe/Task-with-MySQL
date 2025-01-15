@@ -2,24 +2,33 @@
 
 namespace App\Service;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+
 class Sessions
 {
-    public static function SaveToSession($account, $user, $company): void
+    public static function SaveToSession(): void
     {
-        $accountData = [
-            'FirstName' => $user->FirstName,
-            'LastName' => $user->LastName,
-            'Email' => $user->email,
-            'JobTitle' => $account->JobTitle,
-            'CompanyData' =>
-                        [
-                            'CompanyName' => $company->Name,
-                            'CompanyId' => $company->id
-                        ],
-            'AccountId' => $account->id,
-        ];
+        $user_id = auth()->id();
+        $account = DB::table('accounts AS a')
+            ->join('users as u', 'u.id', '=', 'a.UserId')
+            ->join('companies as c', 'c.id', '=', 'a.CompanyId')
+            ->where('a.UserId', $user_id)
+            ->select(
+                'u.FirstName',
+                'u.LastName',
+                'u.email',
+                'c.Name as CompanyName',
+                'a.*'
+            )
+            ->first();
 
-        Session::put('account', $accountData);
+        Session::put('account', $account);
+    }
+
+
+    public static function GetSession()
+    {
+        return Session::get('account');
     }
 }
