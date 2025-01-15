@@ -31,13 +31,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = Auth::user();
-        $account = Account::query()->
-                            where('UserId', $user->id)->first();
-        $company = Company::query()->
-                            where('Id', $account->CompanyId)->first();
-
-        Sessions::SaveToSession($account, $user, $company);
+        Sessions::SaveToSession();
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
