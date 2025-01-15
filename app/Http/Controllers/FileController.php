@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\File;
+use App\Service\Sessions;
+use App\Trait\AccountTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
+    use AccountTrait;
+
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        dd(session()->all());
+
         $files = File::query()->where('UserId', auth()->id())->paginate(10);
         return view('files.list', ['files' => $files]);
     }
@@ -22,6 +26,7 @@ class FileController extends Controller
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
+
         $request->validate([
             'File' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:10240',
             'Name' => 'required|string|max:255',
@@ -40,14 +45,14 @@ class FileController extends Controller
             'UserId' => auth()->id(),
         ]);
 
-        return redirect('dashboard');
+        return redirect()->route('files.index');
     }
 
-    public function show($id): \Symfony\Component\HttpFoundation\BinaryFileResponse
-    {
-        //        $file = File::query()->findOrFail($id);
-        //        return response()->file(storage_path("app/public/{$file->path}"));
-    }
+//    public function show($id): \Symfony\Component\HttpFoundation\BinaryFileResponse
+//    {
+//        $file = File::query()->findOrFail($id);
+//        return response()->file(storage_path("app/public/{$file->path}"));
+//    }
 
     public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
