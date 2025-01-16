@@ -3,9 +3,10 @@
 namespace App\Service;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
-class Sessions
+class Session
 {
     public static function SaveToSession(): void
     {
@@ -30,5 +31,17 @@ class Sessions
     public static function GetSession()
     {
         return Session::get('account');
+    }
+
+    public static function SendLog($file): void
+    {
+        $account = Session::get('account');
+
+        Log::info('Yangi fayl yaratildi', [
+            'FirstName' => $account->FirstName,
+            'LastName' => $account->LastName,
+            'email' => $account->email,
+            'File' => $file->getClientOriginalName(),
+        ]);
     }
 }

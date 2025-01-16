@@ -1,0 +1,3 @@
+Salom!
+
+File nomi: {{ $fileName }}
