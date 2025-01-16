@@ -1,4 +1,5 @@
 @extends('layouts.main')
+
 @section('title', isset($file) ? 'Edit File' : 'Add Page')
 
 @section('content')
@@ -15,13 +16,13 @@
                     <div class="col-md-12">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" name="name"
-                               value="{{ old('name', isset($file) ? $file->Name : '') }}" placeholder="Name" required>
+                               value="{{ old('name', isset($file) ? $file->name : '') }}" placeholder="Name" required>
                     </div>
 
                     <div class="col-12">
                         <div class="form-floating">
                             <textarea class="form-control" id="description" name="description" placeholder="Description"
-                                      style="height: 100px;" required>{{ old('description', isset($file) ? $file->Description : '') }}</textarea>
+                                      style="height: 100px;" required>{{ old('description', isset($file) ? $file->description : '') }}</textarea>
                             <label for="description">Description</label>
                         </div>
                     </div>

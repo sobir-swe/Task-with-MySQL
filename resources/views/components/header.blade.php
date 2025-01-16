@@ -29,7 +29,6 @@
                         {{ $account ? $account->FirstName : 'Guest' }}
                     </span>
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         <h6>{{ $account ? $account->FirstName : 'Guest' }} {{ $account ? $account->LastName : '' }}</h6>
@@ -77,3 +76,4 @@
         </ul>
     </nav><!-- End Icons Navigation -->
 </header><!-- End Header -->
+
