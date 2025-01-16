@@ -6,7 +6,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Session Driver
+    | Default SessionAccount Driver
     |--------------------------------------------------------------------------
     |
     | This option determines the default session driver that is utilized for
@@ -22,7 +22,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Lifetime
+    | SessionAccount Lifetime
     |--------------------------------------------------------------------------
     |
     | Here you may specify the number of minutes that you wish the session
@@ -38,7 +38,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Encryption
+    | SessionAccount Encryption
     |--------------------------------------------------------------------------
     |
     | This option allows you to easily specify that all of your session data
@@ -51,7 +51,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session File Location
+    | SessionAccount File Location
     |--------------------------------------------------------------------------
     |
     | When utilizing the "file" session driver, the session files are placed
@@ -64,7 +64,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Connection
+    | SessionAccount Database Connection
     |--------------------------------------------------------------------------
     |
     | When using the "database" or "redis" session drivers, you may specify a
@@ -77,7 +77,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Table
+    | SessionAccount Database Table
     |--------------------------------------------------------------------------
     |
     | When using the "database" session driver, you may specify the table to
@@ -90,7 +90,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cache Store
+    | SessionAccount Cache Store
     |--------------------------------------------------------------------------
     |
     | When using one of the framework's cache driven session backends, you may
@@ -105,7 +105,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Sweeping Lottery
+    | SessionAccount Sweeping Lottery
     |--------------------------------------------------------------------------
     |
     | Some session drivers must manually sweep their storage location to get
@@ -118,7 +118,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Name
+    | SessionAccount Cookie Name
     |--------------------------------------------------------------------------
     |
     | Here you may change the name of the session cookie that is created by
@@ -134,7 +134,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Path
+    | SessionAccount Cookie Path
     |--------------------------------------------------------------------------
     |
     | The session cookie path determines the path for which the cookie will
@@ -147,7 +147,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Domain
+    | SessionAccount Cookie Domain
     |--------------------------------------------------------------------------
     |
     | This value determines the domain and subdomains the session cookie is

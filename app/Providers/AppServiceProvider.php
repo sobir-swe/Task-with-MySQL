@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\Sessions;
+use App\Service\SessionAccount;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,7 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $account = Sessions::GetSession();
-        View::share('account', $account);
+        View::composer('*', function ($view) {
+            $account = SessionAccount::GetSession();
+            $view->with('account', $account);
+        });
     }
 }
