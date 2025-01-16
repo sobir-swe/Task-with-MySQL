@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
-class Session
+class SessionAccount
 {
     public static function SaveToSession(): void
     {
@@ -35,7 +35,7 @@ class Session
 
     public static function SendLog($file): void
     {
-        $account = Session::get('account');
+        $account = session('account');
 
         Log::info('Yangi fayl yaratildi', [
             'FirstName' => $account->FirstName,
