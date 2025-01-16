@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\FileUploaded;
 use App\Models\File;
-use App\Service\Sessions;
-use App\Trait\AccountTrait;
+use App\Service\SessionAccount;
+use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,9 +15,12 @@ class FileController extends Controller
 
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-
         $files = File::query()->where('UserId', auth()->id())->paginate(10);
+
+        event(new FileUploaded('Test'));
+
         return view('files.list', ['files' => $files]);
+
     }
 
     public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
@@ -26,15 +30,14 @@ class FileController extends Controller
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-
         $request->validate([
-            'File' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:10240',
-            'Name' => 'required|string|max:255',
-            'Description' => 'required|string|max:255',
+            'file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:10240',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
         ]);
 
         $file = $request->file('file');
-        $fileData = $this->saveFileStorage($file, $request);
+        $fileData = $this->saveFileStorage($file);
 
         File::query()->create([
             'Name' => $request->name,
@@ -45,8 +48,14 @@ class FileController extends Controller
             'UserId' => auth()->id(),
         ]);
 
-        return redirect()->route('files.index');
+//        dd($fileData);
+//        event(new FileUploaded($fileData['Name']));
+
+//        SessionAccount::SendLog($fileData['Name']);
+
+        return redirect()->route('files.list');
     }
+
 
 //    public function show($id): \Symfony\Component\HttpFoundation\BinaryFileResponse
 //    {
@@ -104,9 +113,20 @@ class FileController extends Controller
         $path = $file->store('files', 'public');
 
         return [
+            'Name' => $file->getClientOriginalName(),
             'Path' => $path,
             'Extension' => $file->extension(),
             'Size' => $file->getSize(),
         ];
+    }
+
+    public function uploadFile(Request $request)
+    {
+        $fileName = $request->file('file')->store('uploads');
+        $user = auth()->user();
+
+        event(new FileUploaded($fileName, $user));
+
+        return back()->with('success', 'File uploaded successfully!');
     }
 }

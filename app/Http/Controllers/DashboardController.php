@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Service\Sessions;
-use App\Trait\AccountTrait;
+use App\Service\SessionAccount;
+use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
