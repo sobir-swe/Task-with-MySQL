@@ -1,5 +1,6 @@
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
+        <!-- Dashboard -->
         <li class="nav-item">
             <a class="nav-link" href="{{ url('/dashboard') }}">
                 <i class="bi bi-grid"></i>
@@ -7,6 +8,7 @@
             </a>
         </li>
 
+        <!-- Tasks -->
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#tasks-nav" data-bs-toggle="collapse" href="#">
                 <i class="bi bi-list-task"></i><span>Tasks</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -25,11 +27,12 @@
             </ul>
         </li>
 
+        <!-- Files -->
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#files-nav" data-bs-toggle="collapse" href="#">
+            <a class="nav-link collapsed" data-bs-target="#files-section" data-bs-toggle="collapse" href="#">
                 <i class="bi bi-journal-text"></i><span>Files</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="files-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+            <ul id="files-section" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
                     <a href="{{ route('files.list') }}">
                         <i class="bi bi-circle"></i><span>List of all files</span>
@@ -43,19 +46,55 @@
             </ul>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ url('/profile') }}">
-                <i class="bi bi-person"></i>
-                <span>Profile</span>
-            </a>
-        </li>
+        <!-- Roles -->
+        @if($account->UserId == 1)
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#roles-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-shield-lock"></i><span>Roles</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="roles-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('roles.list') }}">
+                            <i class="bi bi-circle"></i><span>List of Roles</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('roles.create') }}">
+                            <i class="bi bi-circle"></i><span>Add Roles</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
 
+        <!-- Permissions -->
+        @if($account->UserId == 1)
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#permissions-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-shield-lock"></i><span>Permissions</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="permissions-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('permissions.list') }}">
+                            <i class="bi bi-circle"></i><span>List of Permissions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('permissions.create') }}">
+                            <i class="bi bi-circle"></i><span>Add Permission</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
+
+        <!-- Logout -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span>Logout</span>
             </a>
-            <form id="logout-form" method="POST" action="{{ route('login') }}" style="display: none;">
+            <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: none;">
                 @csrf
             </form>
         </li>

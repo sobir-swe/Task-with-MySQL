@@ -4,20 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Traits\HasRoles;
 
 class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */
-    use HasFactory;
+    use HasFactory, HasRoles;
 
     protected $fillable = [
         'UserId',
         'CompanyId',
         'JobTitle',
     ];
-
-
-
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
