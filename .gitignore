@@ -22,4 +22,5 @@ yarn-error.log
 /.vscode
 /.zed
 /_docker/data
-/_docker/services/nginx/log
+/_docker/services/nginx/log/error.log
+/_docker/services/nginx/log/access.log
