@@ -19,12 +19,12 @@ class Account extends Model
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'UserId', 'id');
     }
 
     public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'CompanyId', 'id'); // 'CompanyId' accounts jadvalidagi chet kalit
     }
 
     public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany

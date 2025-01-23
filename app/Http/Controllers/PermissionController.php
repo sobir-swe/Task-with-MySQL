@@ -7,53 +7,53 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+    public function list()
     {
-        return view('role-permission.permissions.list');
+        $permissions = Permission::all();
+        return view('role-permission.permissions.list', compact('permissions'));
     }
-
     public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
         return view('role-permission.permissions.create');
     }
 
-    public function store(Request $request): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|unique:permissions,name',
+        $validated = $request->validate([
+            'name' => 'required|unique:permissions,name',
         ]);
 
-        Permission::create([
-            'name' => $request['name'],
-        ]);
+        Permission::create($validated);
 
-        return redirect('permissions')->with('status', 'Permission added successfully!');
+        return redirect()->route('permissions.list')
+        ->with('success', 'Permission created successfully');
     }
 
-    public function edit(string $id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+    public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $permission = Permission::query()->findOrFail($id);
+        $permission = Permission::findOrFail($id);
         return view('role-permission.permissions.create', compact('permission'));
     }
 
-    public function update(Request $request, string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function update(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|unique:permissions,name,' . $id,
+        $permission = Permission::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
+            'guard_name' => 'web'
         ]);
 
-        Permission::query()->where('id', $id)->update([
-            'name' => $request['name'],
-        ]);
+        $permission->update($validated);
 
-        return redirect('permissions')->with('status', 'Permission updated successfully!');
+        return redirect()->route('permissions.list')
+        ->with('success', 'Permission updated successfully');
     }
 
-    public function destroy(string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function destroy($id): \Illuminate\Http\RedirectResponse
     {
-        $role = Permission::query()->findOrFail($id);
-        $role->delete();
-
-        return redirect('permissions')->with('status', 'Permission not found!');
+        $permission = Permission::query()->findOrFail($id);
+        $permission->delete();
+        return redirect()->route('permissions.list')->with('success', 'Permission deleted successfully');
     }
 }

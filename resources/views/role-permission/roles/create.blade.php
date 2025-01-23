@@ -1,31 +1,58 @@
 @extends('layouts.main')
 
-@section('title', isset($role) ? 'Edit Permission' : 'Create Permission')
+@section('title', 'Create Role')
 
 @section('content')
     <div class="container">
-        <h1 class="mt-4">{{ isset($role) ? 'Edit Permission' : 'Create Permission' }}</h1>
-        <form action="{{ isset($role) ? route('roles.update', $role->id) : route('roles.store') }}" method="POST">
-            @csrf
-            @if(isset($role))
-                @method('PUT')
-            @endif
+        <h1 class="mt-4">Create Role</h1>
 
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('roles.store') }}" method="POST">
+            @csrf
+
+            {{-- Role Name --}}
             <div class="mb-3">
                 <label for="name" class="form-label">Role Name</label>
                 <input type="text" class="form-control" id="name" name="name"
-                       value="{{ old('name', isset($role) ? $role->name : '') }}"
-                       placeholder="Enter role name" required>
+                       placeholder="Enter role name" required style="width: 300px;">
             </div>
 
-            <div class="mb-3">
-                <label for="guard_name" class="form-label">Guard Name</label>
-                <input type="text" class="form-control" id="guard_name" name="guard_name"
-                       value="{{ old('guard_name', isset($role) ? $role->guard_name : '') }}"
-                       placeholder="Enter guard name" required>
+
+
+            {{-- Permissions --}}
+            <div class="mb-4">
+                <h3>Assign Permissions</h3>
+                @foreach($permissions as $permission)
+                    <div class="form-check">
+                        <input class="form-check-input custom-checkbox" type="checkbox"
+                               name="permissions[]" value="{{ $permission->id }}" id="permission-{{ $permission->id }}">
+                        <label class="form-check-label" for="permission-{{ $permission->id }}">
+                            {{ $permission->name }}
+                        </label>
+                    </div>
+                @endforeach
             </div>
 
-            <button type="submit" class="btn btn-primary">{{ isset($role) ? 'Update' : 'Submit' }}</button>
+            {{-- Submit Button --}}
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+
+    {{-- Custom CSS --}}
+    <style>
+        .custom-checkbox {
+            transform: scale(1.5);
+            margin-right: 10px;
+        }
+    </style>
 @endsection

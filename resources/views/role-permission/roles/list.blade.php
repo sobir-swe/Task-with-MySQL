@@ -23,7 +23,7 @@
             <tbody>
             @foreach($roles as $role)
                 <tr>
-                    <td>{{ $role->id }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $role->name }}</td>
                     <td>{{ $role->guard_name }}</td>
                     <td>

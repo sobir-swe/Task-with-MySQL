@@ -17,7 +17,7 @@ class FileController extends Controller
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
 //        dd($this->getAccount()->hasPermissionTo('file.view'));
-        dd($this->getAccount()->assignRole('file.view'));
+//        dd($this->getAccount()->assignRole('file.view'));
 
 
         $files = File::query()->where('UserId', auth()->id())->paginate(10);

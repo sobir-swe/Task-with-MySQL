@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
 use App\Http\Middleware\RequestTime;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\TaskController;
@@ -22,6 +24,23 @@ Route::middleware(\App\Http\Middleware\RequestTime::class)->group(function () {
     });
 });
 
+Route::prefix('roles')->middleware(['auth'])->group(function () {
+    Route::get('/', [RoleController::class, 'list'])->name('roles.list');
+    Route::get('/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/store', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/{id}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+});
+
+Route::prefix('accounts')->middleware(['auth'])->group(function () {
+    Route::get('/', [AccountController::class, 'list'])->name('accounts.list');
+    Route::get('/create', [AccountController::class, 'create'])->name('accounts.create');
+    Route::post('/store', [AccountController::class, 'store'])->name('accounts.store');
+    Route::get('/{id}/edit', [AccountController::class, 'edit'])->name('accounts.edit');
+    Route::put('/{id}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::delete('/{id}', [AccountController::class, 'destroy'])->name('accounts.destroy');
+});
 
 Route::prefix('permissions')->middleware(['auth'])->group(function () {
     Route::get('/', [PermissionController::class, 'list'])->name('permissions.list');
@@ -32,14 +51,6 @@ Route::prefix('permissions')->middleware(['auth'])->group(function () {
     Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
 });
 
-Route::prefix('roles')->middleware(['auth'])->group(function () {
-    Route::get('/', [PermissionController::class, 'list'])->name('roles.list');
-    Route::get('/create', [PermissionController::class, 'create'])->name('roles.create');
-    Route::post('/store', [PermissionController::class, 'store'])->name('roles.store');
-    Route::get('/{id}/edit', [PermissionController::class, 'edit'])->name('roles.edit');
-    Route::put('/{id}', [PermissionController::class, 'update'])->name('roles.update');
-    Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('roles.destroy');
-});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

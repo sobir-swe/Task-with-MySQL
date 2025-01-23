@@ -46,8 +46,27 @@
             </ul>
         </li>
 
-        <!-- Roles -->
         @if($account->UserId == 1)
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#accounts-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-person-lines-fill"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="accounts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('accounts.list') }}">
+                            <i class="bi bi-circle"></i><span>List of Roles</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('accounts.create') }}">
+                            <i class="bi bi-circle"></i><span>Add Roles</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Roles -->
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#roles-nav" data-bs-toggle="collapse" href="#">
                     <i class="bi bi-shield-lock"></i><span>Roles</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -65,10 +84,8 @@
                     </li>
                 </ul>
             </li>
-        @endif
 
         <!-- Permissions -->
-        @if($account->UserId == 1)
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#permissions-nav" data-bs-toggle="collapse" href="#">
                     <i class="bi bi-shield-lock"></i><span>Permissions</span><i class="bi bi-chevron-down ms-auto"></i>

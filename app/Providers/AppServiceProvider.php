@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use App\Service\SessionAccount;
@@ -10,17 +9,11 @@ use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         View::composer('*', function ($view) {
@@ -28,31 +21,20 @@ class AppServiceProvider extends ServiceProvider
             $view->with('account', $account);
         });
 
+        $roles = Role::all();
+        $permissions = Permission::all();
 
-        View::composer('role-permission.permissions.list', function ($view) {
-            $permissions = Permission::all();
+        View::composer('role-permission.roles.list', function ($view) use ($roles) {
+            $view->with('roles', $roles);
+        });
+
+        View::composer('role-permission.roles.create', function ($view) use ($roles, $permissions) {
+            $view->with('roles', $roles);
             $view->with('permissions', $permissions);
-
-            $roles = Role::all();
-            $view->with('roles', $roles);
         });
 
-
-        View::composer('role-permission.permissions.create', function ($view) {
-            $permission = Permission::all();
-            $view->with('permission', $permission);
-
-            $roles = Role::all();
-            $view->with('roles', $roles);
-        });
-
-        View::composer('role-permission.roles.list', function ($view) {
-            $roles = Role::all();
-            $view->with('roles', $roles);
-        });
-
-        View::composer('role-permission.roles.create', function ($view) {
-            $roles = Role::all();
+        View::composer('role-permission.permissions.list', function ($view) use ($roles, $permissions) {
+            $view->with('permissions', $permissions);
             $view->with('roles', $roles);
         });
     }
