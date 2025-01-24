@@ -27,9 +27,6 @@
                        placeholder="Enter role name" required style="width: 300px;">
             </div>
 
-
-
-            {{-- Permissions --}}
             <div class="mb-4">
                 <h3>Assign Permissions</h3>
                 @foreach($permissions as $permission)

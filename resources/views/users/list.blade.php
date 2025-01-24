@@ -27,10 +27,10 @@
                     <td>{{ $account->user->FirstName }}</td>
                     <td>{{ $account->user->LastName }}</td>
                     <td>{{ $account->user->email }}</td>
-                    <td>{{ $account->role ?? 'N/A' }}</td>
+                    <td>{{ $account->roles->pluck('name')->implode(', ') }}</td>
                     <td>
-                        <a href="{{ route('roles.edit', $account->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('roles.destroy', $account->id) }}" method="POST" style="display: inline;">
+                        <a href="{{ route('accounts.edit', $account->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('accounts.destroy', $account->id) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
