@@ -34,17 +34,18 @@ class RoleController extends Controller
         $permissions = Permission::whereIn('id', $request->permissions)->pluck('id')->toArray();
 
         $role->syncPermissions($permissions);
-        return redirect()->route('roles.create')->with('success', 'Role created successfully!');
+        return redirect()->route('roles.list')->with('success', 'Role created successfully!');
     }
 
     public function edit($id)
     {
         $role = Role::findOrFail($id);
         $permissions = Permission::all();
-        $accounts = Account::with('user', 'company')->get();
+
+        $accounts = Account::with('user', 'company', 'roles')->get();
 
         $rolePermissions = $role->permissions()->pluck('id')->toArray();
-        $roleUsers = $role->users()->pluck('id')->toArray();
+        $roleUsers = $role->accounts()->pluck('id')->toArray();
 
         return view('role-permission.roles.edit', compact(
             'role',

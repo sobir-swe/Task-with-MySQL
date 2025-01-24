@@ -3,83 +3,152 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class AccountController extends Controller
 {
+    // List all accounts
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $accounts = Account::all();
+        $accounts = Account::paginate(10); // Paginate for better performance
         return view('users.list', ['accounts' => $accounts]);
     }
 
-    public function create()
+    // Show the form to create a new account
+    public function create($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        return view('users.create');
+        $account = Account::find($id);
+
+        if (!$account) {
+            return redirect('/accounts')->with('error', 'Account not found.');
+        }
+
+        $roles = Role::all();
+        $selectedRoles = $account->roles->pluck('id')->toArray();
+
+        return view('users.create', compact('roles', 'account', 'selectedRoles'));
     }
 
+    // Store a new account
     public function store(Request $request)
     {
+        // Inputni tekshirish
         $data = $request->validate([
             'FirstName' => 'required|string|max:255',
             'LastName' => 'required|string|max:255',
-            'email' => 'required|email|unique:accounts,email',
+            'email' => 'required|email|unique:users,email',
+            'CompanyName' => 'required|string|max:255',
+            'JobTitle' => 'required|string|max:255',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|max:255',
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id',
         ]);
 
         $data['password'] = Hash::make($data['password']);
 
-        $account = Account::create($data);
+        $user = User::create([
+            'FirstName' => $data['FirstName'],
+            'LastName' => $data['LastName'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+        ]);
 
-        $account->syncRoles($data['role']);
+        $company = Company::create([
+            'Name' => $data['CompanyName'],
+        ]);
+
+        $account = Account::create([
+            'UserId' => $user->id,
+            'CompanyId' => $company->id,
+            'JobTitle' => $data['JobTitle'],
+        ]);
+
+        $account->assignRole($data['roles']);
 
         return redirect('/accounts')->with('success', 'Account created successfully.');
     }
 
-    public function show(string $id)
+    // Show the form to edit an account
+    public function edit(string $id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $account = Account::findOrFail($id);
-        return view('users.show', ['account' => $account]);
+        $account = Account::with(['user', 'company'])->findOrFail($id);
+        $roles = Role::all();
+        $selectedRoles = $account->roles->pluck('id')->toArray();
+
+        return view('users.edit', compact('roles', 'account', 'selectedRoles'));
     }
 
-    public function edit(string $id)
+    // Update an account
+    public function update(Request $request, string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
-        $account = Account::findOrFail($id);
-        return view('users.edit', ['account' => $account]);
-    }
+        $account = Account::find($id);
 
-    public function update(Request $request, string $id)
-    {
-        $account = Account::findOrFail($id);
+        if (!$account) {
+            return redirect('/accounts')->with('error', 'Account not found.');
+        }
 
         $data = $request->validate([
             'FirstName' => 'required|string|max:255',
             'LastName' => 'required|string|max:255',
-            'email' => "required|email|unique:accounts,email,{$id}",
+            'email' => 'required|email|unique:users,email,' . $account->UserId,
+            'CompanyName' => 'required|string|max:255',
+            'JobTitle' => 'required|string|max:255',
             'password' => 'nullable|string|min:8',
-            'role' => 'required|string|max:255',
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id',
         ]);
 
-        if (!empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
+        // Update user
+        $user = User::find($account->UserId);
+        $userData = [
+            'FirstName' => $data['FirstName'],
+            'LastName' => $data['LastName'],
+            'email' => $data['email'],
+        ];
+
+        if ($data['password']) {
+            $userData['password'] = Hash::make($data['password']);
         }
 
-        $account->update($data);
+        $user->update($userData);
 
-        $account->syncRoles($data['role']);
+        // Update company
+        $company = Company::find($account->CompanyId);
+        $company->update([
+            'Name' => $data['CompanyName'],
+        ]);
+
+        // Update account
+        $account->update([
+            'JobTitle' => $data['JobTitle'],
+        ]);
+
+        // Assign roles
+        $account->roles()->sync($data['roles']);
 
         return redirect('/accounts')->with('success', 'Account updated successfully.');
     }
 
-    public function destroy(string $id)
+    // Delete an account
+    public function destroy(string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
         $account = Account::find($id);
 
-        $account->delete();
+        if (!$account) {
+            return redirect('/accounts')->with('error', 'Account not found.');
+        }
+
+        DB::transaction(function () use ($account) {
+            $account->roles()->detach();
+            $account->delete();
+            $account->user->delete();
+            $account->company->delete();
+        });
 
         return redirect('/accounts')->with('success', 'Account deleted successfully.');
     }

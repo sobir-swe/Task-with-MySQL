@@ -73,11 +73,12 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
-    public function destroy($id): \Illuminate\Http\RedirectResponse
+    public function destroy($taskId): \Illuminate\Http\RedirectResponse
     {
-        $task = Task::query()->findOrFail($id);
+        $task = Task::findOrFail($taskId);
         $task->delete();
 
-        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
+        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully!');
     }
+
 }
