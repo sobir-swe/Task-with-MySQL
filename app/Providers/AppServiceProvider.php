@@ -1,6 +1,7 @@
 <?php
 namespace App\Providers;
 
+use App\Models\Account;
 use App\Service\SessionAccount;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -17,8 +18,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-            $account = SessionAccount::GetSession();
-            $view->with('account', $account);
+            $sessionAccount = SessionAccount::GetSession();
+            $view->with('sessionAccount', $sessionAccount);
+
+            $accountId = auth()->id();
+            $account = Account::find($accountId);
         });
 
         $roles = Role::all();
