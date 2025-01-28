@@ -29,7 +29,7 @@ class SendFileUploadNotification
 	{
 		$fileName = $event->fileName;
 
-		$account = $this->getAccount();
+		$client = $this->getAccount();
 
 		Mail::to(auth()->user())->send(new FileUploadNotification($fileName));
 

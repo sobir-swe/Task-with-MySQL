@@ -11,7 +11,7 @@ class SessionAccount
     public static function SaveToSession(): void
     {
         $user_id = auth()->id();
-        $account = DB::table('accounts AS a')
+        $client = DB::table('accounts AS a')
             ->join('users as u', 'u.id', '=', 'a.UserId')
             ->join('companies as c', 'c.id', '=', 'a.CompanyId')
             ->where('a.UserId', $user_id)
@@ -24,23 +24,23 @@ class SessionAccount
             )
             ->first();
 
-        Session::put('account', $account);
+        Session::put('client', $client);
     }
 
 
     public static function GetSession()
     {
-        return Session::get('account');
+        return Session::get('client');
     }
 
     public static function SendLog($file): void
     {
-        $account = session('account');
+        $client = session('client');
 
         Log::info('Yangi fayl yaratildi', [
-            'FirstName' => $account->FirstName,
-            'LastName' => $account->LastName,
-            'email' => $account->email,
+            'FirstName' => $client->FirstName,
+            'LastName' => $client->LastName,
+            'email' => $client->email,
             'File' => $file->getClientOriginalName(),
         ]);
     }

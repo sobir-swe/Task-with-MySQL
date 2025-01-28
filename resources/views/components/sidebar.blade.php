@@ -46,7 +46,6 @@
             </ul>
         </li>
 
-        @if($account->UserId == 1)
 
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#accounts-nav" data-bs-toggle="collapse" href="#">
@@ -103,7 +102,6 @@
                     </li>
                 </ul>
             </li>
-        @endif
 
         <!-- Logout -->
         <li class="nav-item">

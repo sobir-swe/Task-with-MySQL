@@ -14,20 +14,20 @@ class FileUploadNotification extends Mailable
 {
     use Queueable, SerializesModels, AccountTrait;
 
-    protected $account;
+    protected $client;
     protected $fileName;
 
     public function __construct(string $fileName)
     {
         $this->fileName = $fileName;
-        $this->account = $this->getAccount();
+        $this->client = $this->getAccount();
     }
 
     public function envelope(): Envelope
     {
-        $this->account = $this->getAccount();
+        $this->client = $this->getAccount();
         return new Envelope(
-            from: new Address($this->account->email, 'Task'),
+            from: new Address($this->client->email, 'Task'),
             subject: 'File Upload Notification',
         );
     }
@@ -37,8 +37,8 @@ class FileUploadNotification extends Mailable
         return new Content(
             view: 'mail.fileUpload',
             with: [
-                'FirstName' => $this->account->FirstName,
-                'email' => $this->account->email,
+                'FirstName' => $this->client->FirstName,
+                'email' => $this->client->email,
                 'fileName' => $this->fileName,
             ]
         );

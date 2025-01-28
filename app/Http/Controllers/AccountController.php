@@ -9,35 +9,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-
+use App\Traits\AccountTrait;
 class AccountController extends Controller
 {
-    // List all accounts
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $accounts = Account::paginate(10); // Paginate for better performance
+        $accounts = Account::paginate(10);
         return view('users.list', ['accounts' => $accounts]);
     }
 
     // Show the form to create a new account
-    public function create($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+    public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $account = Account::find($id);
-
-        if (!$account) {
-            return redirect('/accounts')->with('error', 'Account not found.');
-        }
-
         $roles = Role::all();
-        $selectedRoles = $account->roles->pluck('id')->toArray();
 
-        return view('users.create', compact('roles', 'account', 'selectedRoles'));
+        return view('users.create', compact('roles'));
     }
 
-    // Store a new account
+
     public function store(Request $request)
     {
-        // Inputni tekshirish
         $data = $request->validate([
             'FirstName' => 'required|string|max:255',
             'LastName' => 'required|string|max:255',
@@ -68,22 +59,25 @@ class AccountController extends Controller
             'JobTitle' => $data['JobTitle'],
         ]);
 
-        $account->assignRole($data['roles']);
+        $roles = Role::whereIn('id', $data['roles'])->get();
+        $account->syncRoles($roles);
 
         return redirect('/accounts')->with('success', 'Account created successfully.');
     }
 
-    // Show the form to edit an account
-    public function edit(string $id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
-    {
-        $account = Account::with(['user', 'company'])->findOrFail($id);
-        $roles = Role::all();
-        $selectedRoles = $account->roles->pluck('id')->toArray();
 
-        return view('users.edit', compact('roles', 'account', 'selectedRoles'));
+    public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+    {
+        $account = Account::with('user')->find($id);
+
+        if (!$account) {
+            abort(404, 'Account not found.');
+        }
+
+        return view('users.edit', compact('account'));
     }
 
-    // Update an account
+
     public function update(Request $request, string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
         $account = Account::find($id);
@@ -103,7 +97,6 @@ class AccountController extends Controller
             'roles.*' => 'exists:roles,id',
         ]);
 
-        // Update user
         $user = User::find($account->UserId);
         $userData = [
             'FirstName' => $data['FirstName'],
@@ -117,27 +110,23 @@ class AccountController extends Controller
 
         $user->update($userData);
 
-        // Update company
         $company = Company::find($account->CompanyId);
         $company->update([
             'Name' => $data['CompanyName'],
         ]);
 
-        // Update account
         $account->update([
             'JobTitle' => $data['JobTitle'],
         ]);
 
-        // Assign roles
         $account->roles()->sync($data['roles']);
 
         return redirect('/accounts')->with('success', 'Account updated successfully.');
     }
 
-    // Delete an account
-    public function destroy(string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function destroy(string $id)
     {
-        $account = Account::find($id);
+        $account = Account::with(['user', 'company'])->find($id);
 
         if (!$account) {
             return redirect('/accounts')->with('error', 'Account not found.');
@@ -145,9 +134,16 @@ class AccountController extends Controller
 
         DB::transaction(function () use ($account) {
             $account->roles()->detach();
+
+            if ($account->user) {
+                $account->user->delete();
+            }
+
+            if ($account->company) {
+                $account->company->delete();
+            }
+
             $account->delete();
-            $account->user->delete();
-            $account->company->delete();
         });
 
         return redirect('/accounts')->with('success', 'Account deleted successfully.');

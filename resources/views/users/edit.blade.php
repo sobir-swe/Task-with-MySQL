@@ -5,26 +5,26 @@
 @section('content')
     <div class="container">
         <h1 class="mt-4">Edit User</h1>
-        <form action="{{ route('accounts.update', $account->user->id) }}" method="POST">
+        <form action="{{ route('accounts.update', $account->id) }}" method="POST">
             @csrf
             @method('PUT')
 
             <div class="mb-3">
                 <label for="FirstName" class="form-label">First Name</label>
                 <input type="text" name="FirstName" id="FirstName" class="form-control"
-                       value="{{ old('FirstName', $account->user->FirstName) }}" required>
+                       value="{{ old('FirstName', $account->user?->FirstName) }}" required>
             </div>
 
             <div class="mb-3">
                 <label for="LastName" class="form-label">Last Name</label>
                 <input type="text" name="LastName" id="LastName" class="form-control"
-                       value="{{ old('LastName', $account->user->LastName) }}" required>
+                       value="{{ old('LastName', $account->user?->LastName) }}" required>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" name="email" id="email" class="form-control"
-                       value="{{ old('email', $account->user->email) }}" required>
+                       value="{{ old('email', $account->user?->email) }}" required>
             </div>
 
             <div class="mb-3">
@@ -42,8 +42,7 @@
             <div class="mb-3">
                 <label for="CompanyName" class="form-label">Company Name</label>
                 <input type="text" name="CompanyName" id="CompanyName" class="form-control"
-                       value="{{ old('CompanyName', optional($account->user->CompanyName)->CompanyName ?? '') }}"
-                       required>
+                       value="{{ old('CompanyName', $account->company?->Name) }}" required>
             </div>
 
             <div class="mb-3">

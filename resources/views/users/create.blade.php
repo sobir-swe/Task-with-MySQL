@@ -42,6 +42,9 @@
             <div class="mb-4">
                 <h3>Roles</h3>
                 <div class="row">
+                    @php
+                        $selectedRoles = old('roles', []);
+                    @endphp
                     @foreach($roles as $role)
                         <div class="col-md-2 mb-2">
                             <div class="form-check">

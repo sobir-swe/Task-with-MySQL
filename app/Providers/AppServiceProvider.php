@@ -18,11 +18,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-            $sessionAccount = SessionAccount::GetSession();
-            $view->with('sessionAccount', $sessionAccount);
+            $client = SessionAccount::GetSession();
+            $view->with('client', $client);
+        });
 
-            $accountId = auth()->id();
-            $account = Account::find($accountId);
+        View::composer('*', function ($view) {
+            $account = Account::all();
+            $view->with('account', $account);
         });
 
         $roles = Role::all();

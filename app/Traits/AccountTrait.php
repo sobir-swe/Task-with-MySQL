@@ -8,6 +8,6 @@ trait AccountTrait
 {
     public function getAccount(): Account
     {
-        return session('account');
+        return session('$client');
     }
 }

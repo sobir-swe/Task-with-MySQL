@@ -8,7 +8,6 @@ use App\Service\SessionAccount;
 use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Traits\HasPermissions;
 
 class FileController extends Controller
 {
@@ -16,13 +15,9 @@ class FileController extends Controller
 
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-//        dd($this->getAccount()->hasPermissionTo('file.view'));
-//        dd($this->getAccount()->assignRole('file.view'));
-
-
         $files = File::query()->where('UserId', auth()->id())->paginate(10);
 
-        event(new FileUploaded('Test'));
+//        event(new FileUploaded('Test'));
 
         return view('files.list', ['files' => $files]);
 

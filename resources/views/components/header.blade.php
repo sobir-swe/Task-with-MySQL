@@ -26,14 +26,14 @@
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                     <img src="{{ asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
                     <span class="d-none d-md-block dropdown-toggle ps-2">
-                        {{ $account ? $account->FirstName : 'Guest' }} <br>
+                        {{ $client ? $client->FirstName : 'Guest' }} <br>
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        <h6>{{ $account ? $account->FirstName : 'Guest' }} {{ $account ? $account->LastName : '' }}</h6>
-                        <h6>({{ $account && $account->JobTitle ? $account->JobTitle : 'No Job Title' }})</h6>
-                        <span>{{ $account && $account->CompanyName ? $account->CompanyName : 'No Company' }}</span>
+                        <h6>{{ $client ? $client->FirstName : 'Guest' }} {{ $client ? $client->LastName : '' }}</h6>
+                        <h6>({{ $client && $client->JobTitle ? $client->JobTitle : 'No Job Title' }})</h6>
+                        <span>{{ $client && $client->CompanyName ? $client->CompanyName : 'No Company' }}</span>
                     </li>
 
                     <li>
