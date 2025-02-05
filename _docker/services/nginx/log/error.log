@@ -2329,3 +2329,4 @@
 2025/02/05 06:18:47 [notice] 1#1: start worker process 33
 2025/02/05 06:18:47 [notice] 1#1: start worker process 34
 2025/02/05 06:18:47 [notice] 1#1: start worker process 35
+2025/02/05 10:18:58 [warn] 23#23: *136 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000001, client: 172.18.0.1, server: localhost, request: "POST /files HTTP/1.1", host: "localhost:9800", referrer: "http://localhost:9800/files/create"
