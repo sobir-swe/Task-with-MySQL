@@ -3,6 +3,7 @@ namespace App\Providers;
 
 use App\Models\Account;
 use App\Service\SessionAccount;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Permission;
@@ -17,29 +18,29 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+	    Relation::enforceMorphMap([
+		    'account' => 'App\Models\Account',
+	    ]);
+
         View::composer('*', function ($view) {
             $client = SessionAccount::GetSession();
             $view->with('client', $client);
-        });
-
-        View::composer('*', function ($view) {
-            $account = Account::all();
-            $view->with('account', $account);
+			$view->with('currentAccount', $client);
         });
 
         $roles = Role::all();
         $permissions = Permission::all();
 
-        View::composer('role-permission.roles.list', function ($view) use ($roles) {
+        View::composer('roles.list', function ($view) use ($roles) {
             $view->with('roles', $roles);
         });
 
-        View::composer('role-permission.roles.create', function ($view) use ($roles, $permissions) {
+        View::composer('roles.create', function ($view) use ($roles, $permissions) {
             $view->with('roles', $roles);
             $view->with('permissions', $permissions);
         });
 
-        View::composer('role-permission.permissions.list', function ($view) use ($roles, $permissions) {
+        View::composer('permissions.list', function ($view) use ($roles, $permissions) {
             $view->with('permissions', $permissions);
             $view->with('roles', $roles);
         });

@@ -8,6 +8,11 @@ trait AccountTrait
 {
     public function getAccount(): Account
     {
-        return session('$client');
+        return session('client');
     }
+
+	public function getAccountId(): int
+	{
+		return $this->getAccount()->Id;
+	}
 }

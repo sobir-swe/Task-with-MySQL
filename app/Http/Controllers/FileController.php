@@ -15,11 +15,9 @@ class FileController extends Controller
 
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $files = File::query()->where('UserId', auth()->id())->paginate(10);
-
-//        event(new FileUploaded('Test'));
-
-        return view('files.list', ['files' => $files]);
+	    $accountId = $this->getAccount()->UserId;
+		$files = File::where('UserId', $accountId)->paginate(10);
+		return view('files.list', ['files' => $files]);
 
     }
 

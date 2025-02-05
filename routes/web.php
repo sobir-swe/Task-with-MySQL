@@ -7,30 +7,18 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Middleware\RequestTime;
+use App\Http\Middleware\RolePermissionMiddleware;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\TaskController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+	->middleware(['auth', 'verified'])
+	->name('dashboard');
 
-Route::middleware(\App\Http\Middleware\RequestTime::class)->group(function () {
+Route::middleware(RequestTime::class)->group(function () {
     Route::get('/times', function () {
         return response()->json(['message' => 'Times route works!']);
     });
-});
-
-Route::prefix('roles')->middleware(['auth'])->group(function () {
-    Route::get('/', [RoleController::class, 'list'])->name('roles.list');
-    Route::get('/create', [RoleController::class, 'create'])->name('roles.create');
-    Route::post('/store', [RoleController::class, 'store'])->name('roles.store');
-    Route::get('/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
-    Route::put('/{id}', [RoleController::class, 'update'])->name('roles.update');
-    Route::delete('/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
 });
 
 Route::prefix('accounts')->middleware(['auth'])->group(function () {
@@ -42,6 +30,15 @@ Route::prefix('accounts')->middleware(['auth'])->group(function () {
     Route::delete('/{id}', [AccountController::class, 'destroy'])->name('accounts.destroy');
 });
 
+Route::prefix('roles')->middleware(['auth'])->group(function () {
+    Route::get('/', [RoleController::class, 'list'])->name('roles.list');
+    Route::get('/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/store', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/{id}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+});
+
 Route::prefix('permissions')->middleware(['auth'])->group(function () {
     Route::get('/', [PermissionController::class, 'list'])->name('permissions.list');
     Route::get('/create', [PermissionController::class, 'create'])->name('permissions.create');
@@ -50,7 +47,6 @@ Route::prefix('permissions')->middleware(['auth'])->group(function () {
     Route::put('/{id}', [PermissionController::class, 'update'])->name('permissions.update');
     Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -73,5 +69,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 });
+
+Route::get('/403', function () {
+    return view('errors.403');
+})->name('error.403');
+
 
 require __DIR__.'/auth.php';
