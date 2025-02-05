@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -10,9 +11,11 @@ use function Symfony\Component\String\s;
 
 class TaskController extends Controller
 {
+    use AccountTrait;
+
     public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $tasks = Task::query()->where('AccountId', auth()->id())->paginate(10);
+        $tasks = Task::query()->where('AccountId', $this->getAccountId())->paginate(10);
         return view('tasks.show', ['tasks' => $tasks]);
     }
 

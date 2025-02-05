@@ -14,9 +14,10 @@ class AccountController extends Controller
 {
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
-        $accounts = Account::paginate(10);
+        $accounts = Account::with('user')->paginate(10);
         return view('users.list', ['accounts' => $accounts]);
     }
+
 
     // Show the form to create a new account
     public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
@@ -26,8 +27,7 @@ class AccountController extends Controller
         return view('users.create', compact('roles'));
     }
 
-
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
         $data = $request->validate([
             'FirstName' => 'required|string|max:255',
@@ -60,71 +60,70 @@ class AccountController extends Controller
         ]);
 
         $roles = Role::whereIn('id', $data['roles'])->get();
-        $account->syncRoles($roles);
+        $account->roles()->sync($roles);
 
         return redirect('/accounts')->with('success', 'Account created successfully.');
     }
 
-
-    public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+    public function edit($id)
     {
-        $account = Account::with('user')->find($id);
+        $account = Account::with(['user', 'company'])->findOrFail($id);
+        $roles = Role::all();
+        $selectedRoles = $account->roles->pluck('id')->toArray();
 
-        if (!$account) {
-            abort(404, 'Account not found.');
-        }
-
-        return view('users.edit', compact('account'));
+        return view('users.edit', compact('account', 'roles', 'selectedRoles'));
     }
 
+	public function update(Request $request, string $id)
+	{
+		$account = Account::find($id);
 
-    public function update(Request $request, string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-    {
-        $account = Account::find($id);
+		if (!$account) {
+			return redirect('/accounts')->with('error', 'Account not found.');
+		}
 
-        if (!$account) {
-            return redirect('/accounts')->with('error', 'Account not found.');
-        }
+		$data = $request->validate([
+			'FirstName' => 'required|string|max:255',
+			'LastName' => 'required|string|max:255',
+			'email' => 'required|email|unique:users,email,' . $account->UserId,
+			'CompanyName' => 'required|string|max:255',
+			'JobTitle' => 'required|string|max:255',
+			'password' => 'nullable|string|min:8',
+			'roles' => 'required|array',
+			'roles.*' => 'exists:roles,id',
+		]);
 
-        $data = $request->validate([
-            'FirstName' => 'required|string|max:255',
-            'LastName' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $account->UserId,
-            'CompanyName' => 'required|string|max:255',
-            'JobTitle' => 'required|string|max:255',
-            'password' => 'nullable|string|min:8',
-            'roles' => 'required|array',
-            'roles.*' => 'exists:roles,id',
-        ]);
+		$user = User::find($account->UserId);
+		$userData = [
+			'FirstName' => $data['FirstName'],
+			'LastName' => $data['LastName'],
+			'email' => $data['email'],
+		];
 
-        $user = User::find($account->UserId);
-        $userData = [
-            'FirstName' => $data['FirstName'],
-            'LastName' => $data['LastName'],
-            'email' => $data['email'],
-        ];
+		if (!empty($data['password'])) {
+			$userData['password'] = Hash::make($data['password']);
+		}
 
-        if ($data['password']) {
-            $userData['password'] = Hash::make($data['password']);
-        }
+		$user->update($userData);
 
-        $user->update($userData);
+		$company = Company::find($account->CompanyId);
+		$company->update([
+			'Name' => $data['CompanyName'],
+		]);
 
-        $company = Company::find($account->CompanyId);
-        $company->update([
-            'Name' => $data['CompanyName'],
-        ]);
+		$account->update([
+			'JobTitle' => $data['JobTitle'],
+		]);
 
-        $account->update([
-            'JobTitle' => $data['JobTitle'],
-        ]);
+		// Barcha rollarni bir vaqtda sinxronlash
+		$roles = Role::whereIn('id', $data['roles'])->get();
+		$roleNames = $roles->pluck('name')->toArray();
+		$account->syncRoles($roleNames);
 
-        $account->roles()->sync($data['roles']);
+		return redirect('/accounts')->with('success', 'Account updated successfully.');
+	}
 
-        return redirect('/accounts')->with('success', 'Account updated successfully.');
-    }
-
-    public function destroy(string $id)
+	public function destroy(string $id)
     {
         $account = Account::with(['user', 'company'])->find($id);
 
