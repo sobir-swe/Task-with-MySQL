@@ -1,10 +1,10 @@
 @extends('layouts.main')
 
-@section('title', 'Edit Role')
+@section('title', 'Create Role')
 
 @section('content')
     <div class="container">
-        <h1 class="mt-4">Edit Role</h1>
+        <h1 class="mt-4">Create Role</h1>
 
         {{-- Validatsiya xatolarini ko'rsatish --}}
         @if ($errors->any())
@@ -17,14 +17,13 @@
             </div>
         @endif
 
-        <form action="{{ route('roles.update', $role->id) }}" method="POST">
+        <form action="{{ route('roles.store') }}" method="POST">
             @csrf
-            @method('PUT')
             {{-- Role nomi --}}
             <div class="mb-3">
                 <label for="name" class="form-label">Role Name</label>
                 <input type="text" class="form-control" id="name" name="name"
-                       value="{{ old('name', $role->name) }}" placeholder="Enter role name" required>
+                       value="{{ old('name') }}" placeholder="Enter role name" required>
             </div>
 
             {{-- Permissions va Users listi yonma-yon --}}
@@ -48,8 +47,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input custom-checkbox" type="checkbox"
                                                name="permissions[]"
-                                               value="{{ $permission->id }}"
-                                            {{ $role->permissions->contains($permission->id) ? 'checked' : '' }}>
+                                               value="{{ $permission->id }}">
                                     </div>
                                 </td>
                                 <td>{{ $loop->iteration }}</td>
@@ -82,9 +80,8 @@
                                 <td>
                                     <div class="form-check">
                                         <input class="form-check-input custom-checkbox" type="checkbox"
-                                               name="users[]"
-                                               value="{{ $account->user->id }}"
-                                            {{ $account->user->hasRole($role->name) ? 'checked' : '' }}>
+                                               name="accounts[]"
+                                               value="{{ $account->Id }}">
                                     </div>
                                 </td>
                                 <td>{{ $loop->iteration }}</td>
@@ -100,14 +97,14 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
 
     {{-- Custom CSS --}}
     <style>
         .custom-checkbox {
-            transform: scale(1.5); /* Checkboxni kattalashtirish */
+            transform: scale(1.5); /
         }
     </style>
 @endsection
