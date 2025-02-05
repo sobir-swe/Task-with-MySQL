@@ -58,11 +58,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/files', [FileController::class, 'store'])->name('files.store');
     Route::get('/files/{id}', [FileController::class, 'show'])->name('files.show');
     Route::get('/files/{id}/edit', [FileController::class, 'edit'])->name('files.edit');
-    Route::put('/files/{id}', [FileController::class, 'update'])->name('files.update');
+    Route::put('/files/{id}', [FileController::class, 'update'  ])->name('files.update');
     Route::delete('/files/{id}', [FileController::class, 'destroy'])->name('files.destroy');
 
-    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::get('/tasks', [TaskController::class, 'list'])->name('tasks.list');
+	Route::post('/tasks/{task}/assign', [TaskController::class, 'assign'])->name('tasks.assign');
+	Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
     Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
