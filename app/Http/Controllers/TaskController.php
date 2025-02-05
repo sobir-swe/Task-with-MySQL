@@ -2,86 +2,136 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Task;
 use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use function Symfony\Component\String\s;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
-    use AccountTrait;
+	use AccountTrait;
 
-    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
-    {
-        $tasks = Task::query()->where('AccountId', $this->getAccountId())->paginate(10);
-        return view('tasks.show', ['tasks' => $tasks]);
-    }
+	public function list()
+	{
+		$tasks = Task::query()
+			->where('AccountId', $this->getAccountId())
+			->paginate(10);
 
-    public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
-    {
-        return view('tasks.add');
-    }
+		foreach($tasks as $task) {
+			$task->ThoseSent = $task->sentAccounts()
+				->pluck('AccountId')
+				->implode(', ');
+		}
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
-    {
-        $request->validate([
-            'Name' => 'required|string|max:255',
-            'Description' => 'required|string|max:255',
-            'Isdone' => 'nullable|boolean',
-            'Deadline' => 'nullable|date_format:Y-m-d H:i',
-        ]);
+		return view('tasks.list', ['tasks' => $tasks]);
+	}
 
-        Task::query()->create([
-            'Name' => $request->name,
-            'Description' => $request->description,
-            'IsDone' => $request->is_done ?? false,
-            'Deadline' => $request->deadline,
-            'UserId' => auth()->id(),
-        ]);
+	public function create()
+	{
+		return view('tasks.add');
+	}
 
-        return redirect()->route('tasks.index');
-    }
+	public function store(Request $request)
+	{
+		$request->validate([
+			'Name' => 'required|string|max:255',
+			'Description' => 'required|string|max:255',
+			'IsDone' => 'nullable|boolean',
+			'Deadline' => 'nullable|date_format:Y-m-d H:i',
+			'files' => 'nullable|array',
+			'files.*' => 'file|mimes:jpeg,png,pdf,docx,txt|max:10240',
+		]);
 
-    public function show($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
-    {
-        $task = Task::query()->findOrFail($id);
-        return view('tasks.show_single', compact('task'));
-    }
+		$task = Task::create([
+			'Name' => $request->Name,
+			'Description' => $request->Description,
+			'IsDone' => $request->IsDone ?? false,
+			'Deadline' => $request->Deadline,
+			'AccountId' => $this->getAccountId(),
+			'UserId' => auth()->id(),
+			'CompanyId' => auth()->user()->company_id,
+		]);
 
-    public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
-    {
-        $task = Task::query()->findOrFail($id);
-        return view('tasks.edit', compact('task'));
-    }
+		if ($request->hasFile('files')) {
+			foreach ($request->file('files') as $file) {
+				$path = $file->store('tasks', 'public');
+				$fileModel = $task->files()->create([
+					'path' => $path,
+					'name' => $file->getClientOriginalName(),
+				]);
+			}
+		}
 
-    public function update(Request $request, $id): \Illuminate\Http\RedirectResponse
-    {
-        $request->validate([
-            'Name' => 'required|string|max:255',
-            'Description' => 'required|string|max:255',
-            'IsDone' => 'nullable|boolean',
-            'Deadline' => 'nullable|date_format:Y-m-d H:i',
-        ]);
+		return redirect()->route('tasks.show', $task->id);
+	}
 
-        $task = Task::query()->findOrFail($id);
-        $task->name = $request->name;
-        $task->description = $request->description;
-        $task->is_done = $request->is_done ?? false;
-        $task->deadline = $request->deadline;
+	public function show($id)
+	{
+		$task = Task::findOrFail($id);
+		$accounts = Account::where('id', '!=', $this->getAccountId())->get();
+		return view('tasks.show', compact('task', 'accounts'));
+	}
 
-        $task->save();
+	public function assign(Request $request, $id): \Illuminate\Http\RedirectResponse
+	{
+		$request->validate([
+			'accounts' => 'required|array',
+			'accounts.*' => 'exists:accounts,Id',
+			'files' => 'nullable|array',
+			'files.*' => 'file|mimes:jpeg,png,pdf,docx,txt|max:10240',
+		]);
 
-        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
-    }
+		$task = Task::findOrFail($id);
 
-    public function destroy($taskId): \Illuminate\Http\RedirectResponse
-    {
-        $task = Task::findOrFail($taskId);
-        $task->delete();
+		$task->sentAccounts()->sync($request->accounts);
 
-        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully!');
-    }
+		if ($request->hasFile('files')) {
+			foreach ($request->file('files') as $file) {
+				$path = $file->store('tasks', 'public');
+				$task->files()->create([
+					'path' => $path,
+					'name' => $file->getClientOriginalName(),
+				]);
+			}
+		}
 
+		return redirect()->route('tasks.list')
+			->with('success', 'Task assigned successfully');
+	}
+
+
+	public function edit($id)
+	{
+		$task = Task::query()->findOrFail($id);
+		return view('tasks.edit', compact('task'));
+	}
+
+	public function update(Request $request, $id)
+	{
+		$request->validate([
+			'Name' => 'required|string|max:255',
+			'Description' => 'required|string|max:255',
+			'IsDone' => 'nullable|boolean',
+			'Deadline' => 'nullable|date_format:Y-m-d H:i',
+		]);
+
+		$task = Task::query()->findOrFail($id);
+		$task->name = $request->Name;
+		$task->description = $request->Description;
+		$task->is_done = $request->IsDone ?? false;
+		$task->deadline = $request->Deadline;
+
+		$task->save();
+
+		return redirect()->route('tasks.list')->with('success', 'Task updated successfully.');
+	}
+
+	public function destroy($taskId)
+	{
+		$task = Task::findOrFail($taskId);
+		$task->delete();
+
+		return redirect()->route('tasks.list')->with('success', 'Task deleted successfully!');
+	}
 }

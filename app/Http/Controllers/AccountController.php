@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use App\Traits\AccountTrait;
 class AccountController extends Controller
 {
     public function list(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
@@ -18,8 +17,6 @@ class AccountController extends Controller
         return view('users.list', ['accounts' => $accounts]);
     }
 
-
-    // Show the form to create a new account
     public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
         $roles = Role::all();
@@ -65,7 +62,7 @@ class AccountController extends Controller
         return redirect('/accounts')->with('success', 'Account created successfully.');
     }
 
-    public function edit($id)
+    public function edit($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
         $account = Account::with(['user', 'company'])->findOrFail($id);
         $roles = Role::all();
@@ -74,7 +71,7 @@ class AccountController extends Controller
         return view('users.edit', compact('account', 'roles', 'selectedRoles'));
     }
 
-	public function update(Request $request, string $id)
+	public function update(Request $request, string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
 	{
 		$account = Account::find($id);
 
@@ -115,7 +112,6 @@ class AccountController extends Controller
 			'JobTitle' => $data['JobTitle'],
 		]);
 
-		// Barcha rollarni bir vaqtda sinxronlash
 		$roles = Role::whereIn('id', $data['roles'])->get();
 		$roleNames = $roles->pluck('name')->toArray();
 		$account->syncRoles($roleNames);
@@ -123,8 +119,8 @@ class AccountController extends Controller
 		return redirect('/accounts')->with('success', 'Account updated successfully.');
 	}
 
-	public function destroy(string $id)
-    {
+	public function destroy(string $id): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+	{
         $account = Account::with(['user', 'company'])->find($id);
 
         if (!$account) {
