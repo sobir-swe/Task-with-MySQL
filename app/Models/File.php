@@ -27,4 +27,9 @@ class File extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+	public function task(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+	{
+		return $this->belongsTo(Task::class, 'id');
+	}
 }

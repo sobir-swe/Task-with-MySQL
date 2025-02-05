@@ -41,10 +41,15 @@ class Account extends Model
         return $this->hasMany(Task::class);
     }
 
+	public function sentAccounts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	{
+		return $this->belongsToMany(Task::class, 'task_has_account',  'TaskId', 'AccountId');
+	}
+
+
 	public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	{
 		return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
 			->wherePivot('model_type', $this->getMorphClass());
-
 	}
 }
